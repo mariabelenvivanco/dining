@@ -1,5 +1,6 @@
 package com.example.demouser.dining;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -7,6 +8,8 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.sql.Time;
@@ -17,22 +20,21 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
-import static android.telephony.PhoneNumberUtils.formatNumber;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
     private int i;
     private int toCount;
+    int pro = 0;
 
     private LocalDate currentDate; //
     String day;
     HashMap<String, ArrayList<Pair<String,String>>> newDorm;
     TextView bla;
-
+    TextView scheduleText;
+    Button newDorm_color;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -52,37 +54,41 @@ public class MainActivity extends AppCompatActivity {
         Pair<String,String> timesforDay = (newDorm.get(day)).get(0);
 
 
-        Long timeDifference = checkRange(timeNow,timesforDay.first,timesforDay.second); // current time difference
+        final Long timeDifference = checkRange(timeNow,timesforDay.first,timesforDay.second); // current time difference
         countDown(timeDifference);
         Log.d("blah",timeDifference.toString());
 
+        final ProgressBar mProgressBar;
+        CountDownTimer mCountDownTimer;
 
 
+        mProgressBar=(ProgressBar)findViewById(R.id.progressBar_countDown);
+        mProgressBar.setProgress(pro);
+        mCountDownTimer = new CountDownTimer(timeDifference,1000) {
 
-        //Log.d("Vinty", timeNow);
-        //get day, get corresponding time,
-
-        /*new CountDownTimer(number, 1000) {
-
+            @Override
             public void onTick(long millisUntilFinished) {
-                mTextField.setText( + millisUntilFinished / 1000);
+                Log.v("Log_tag", "Tick of Progress"+ pro + millisUntilFinished);
+                pro++;
+                mProgressBar.setProgress((int)pro *100/(int) (timeDifference/1000));
+
             }
 
+            @Override
             public void onFinish() {
-                mTextField.setText("done!");
+                //Do what you want
+                pro++;
+                mProgressBar.setProgress(100);
             }
-        }.start();*/
-
-
-
-
+        };
+        mCountDownTimer.start();
 
 
     }
 
 
 
-    //Pair<String,String> timesforDay = (newDorm.get(day)).get(0);
+
 
        public void dataCreate(){
         newDorm = new HashMap<>();
@@ -104,35 +110,14 @@ public class MainActivity extends AppCompatActivity {
         newDorm.put("saturday",list3);
         newDorm.put("sunday",list3);
 
+
+
     }
     private void countDown (long timeRemaining){
         final String closeOrOpen = (String) bla.getText();
 
-//        int hours= (int)(timeRemaining/1000/60/60);
-//        int minutes= (int)((timeRemaining-(hours*60*60*1000))/1000/60);
-//        int seconds= (int)((timeRemaining-(hours*60*60*1000)-(minutes*60*1000))/1000);
 
         CountDownTimer timer = new CountDownTimer(timeRemaining, 1000) {
-
-//            public void onTick(long millisUntilFinished) {
-//                bla.setText("Time remaining: " + String.format("%d hours: %d min: %d sec",
-//                        TimeUnit.MICROSECONDS.toMinutes( millisUntilFinished),
-//                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
-//                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
-//            }
-//        });
-
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//                bla.setText(String.format("%02d:%02d:%02d",
-//                //bla.setText(String.format("%02d:%02d:%02d",
-//                        TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
-//                        //,
-//                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
-//                        (TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
-//                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)))));
-//            }
-
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -166,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
     public long checkRange(String valueToCheck, String startTime, String endTime) {
         //boolean isBetween = false;
+        newDorm_color = (Button)findViewById(R.id.New_Dorm);
         long toCount = 0;
         try {
             Date end = new SimpleDateFormat("HH:mm:ss").parse(endTime);
@@ -177,13 +163,16 @@ public class MainActivity extends AppCompatActivity {
             if (end.after(currentTime) && start.before(currentTime)) {
                 toCount =end.getTime()-currentTime.getTime();
                 bla.setText("Time until New Dorm closes");
+                newDorm_color.setBackgroundColor(Color.BLUE);
+                newDorm_color.setTextColor(Color.WHITE);
                 //isBetween = true;
             }
             else{
+                bla.setText("Time until New Dorm opens");
                 toCount = start.getTime()-currentTime.getTime();
                 if(toCount<0){
                     toCount= 86400000 - (-1 * toCount);
-                    bla.setText("Time until New Dorm opens");
+
                 }
             }
         }
