@@ -4,7 +4,9 @@ An android app built to help Bi-Co students navigate Bryn Mawr College's dining 
 
 # Contributors 
 Maria Vivanco (mariabelenvivanco @ github)
+
 Zainab Batool (zainabbatool @ github
+
 Vinty Guo (vinty666 @ github) 
 
 # Special Features: 
